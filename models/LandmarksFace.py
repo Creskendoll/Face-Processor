@@ -80,3 +80,10 @@ class LandmarksFace(object):
 
     def getEyeAspectRatio(self):
         return self.getEyeWidth() / self.getEyeHeight()
+
+    def __str__(self):
+        results = self.get(self.funcDict.keys())
+        s = ""
+        for res, key in zip(results, self.funcDict.keys()):
+            s += "{}: {}\n".format(key, res)
+        return s
