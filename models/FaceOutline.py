@@ -6,7 +6,6 @@ class FaceOutline(LandmarksFace):
     # Normalized values won't work since the outline will be drawn on a
     # equally big surface
     def __init__(self, features):
-        # self.__init__(features)
         self.landmarks, self.bbox, = features
 
         self.chin_nodes = list(range(17))
