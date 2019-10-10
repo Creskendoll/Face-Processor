@@ -30,6 +30,10 @@ def main():
         outlined = np.empty((frame_H, frame_W, 3), np.uint8)
         outlined.fill(255)
 
+        if recording:
+            recorder.captureFrame(frame);
+            recorder.captureFace(LandmarksFace(shapes))
+
         # If a face is detected in frame
         if len(shapes[0]) > 0 and len(shapes[1]) > 0:
             # Normalize distances
@@ -40,10 +44,6 @@ def main():
             # Outline drawer
             face_outline = FaceOutline(shapes)
             outlined = face_outline.drawOutline(outlined)
-            
-            if recording:
-                recorder.captureFace(LandmarksFace(shapes))
-                pass
         
         frame_with_outline = np.vstack((detected, outlined))
 
@@ -54,8 +54,11 @@ def main():
         # show the output image with the face detections + facial landmarks
         if key == ord('q'):
             cam.stop()
+            cv2.destroyAllWindows()
             break
         elif key == ord('s'):
+            if recording:
+                recorder.end()
             recording = not recording
 
 if __name__ == "__main__":
