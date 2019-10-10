@@ -3,7 +3,7 @@ import cv2
 
 class Recorder(object):
     def __init__(self, file_path):
-        self.file_path = filepath
+        self.file_path = file_path
         self.data = []
         self.video_out = cv2.VideoWriter(
             'output.avi', -1, 20.0, (640, 480))

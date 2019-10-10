@@ -38,12 +38,19 @@ def main():
         if len(shapes[0]) > 0 and len(shapes[1]) > 0:
             # Normalize distances
             normalized_shapes = normalize(shapes)
-            # create face properties 
-            face = LandmarksFace(normalized_shapes)
-            
-            # Outline drawer
-            face_outline = FaceOutline(shapes)
-            outlined = face_outline.drawOutline(outlined)
+            # Values must be zipped together because of a stupid design mistake
+            # Too lazy to go back and fix it
+            norm_faces = zip(normalized_shapes[0], normalized_shapes[1])
+            for i, norm_face in enumerate(norm_faces):
+                # create face properties 
+                face = LandmarksFace(norm_face)
+                print("Face #{}:\n{}".format(i, face))
+
+            faces = zip(shapes[0], shapes[1])
+            for face in faces:
+                # Outline drawer
+                face_outline = FaceOutline(face)
+                outlined = face_outline.drawOutline(outlined)
         
         frame_with_outline = np.vstack((detected, outlined))
 

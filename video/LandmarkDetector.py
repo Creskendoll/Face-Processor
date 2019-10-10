@@ -22,8 +22,8 @@ class LandmarkDetector(object):
         bbox = [face_utils.rect_to_bb(rect) for rect in rects]
         
         # Flatten the list of landmarks
-        flat_landmarks = list(chain.from_iterable(landmarks))
-        return (flat_landmarks, bbox)
+        # flat_landmarks = list(chain.from_iterable(landmarks))
+        return (landmarks, bbox)
 
     def drawOverlay(self, img, shapes=None):
         result_img = img.copy()
@@ -33,8 +33,13 @@ class LandmarkDetector(object):
             shapes = self.getShapes(result_img)
 
         # unpack landmarks and bboxes
-        landmarks, rects = shapes
-        for i, rect in enumerate(rects):
+        # landmarks, rects = shapes
+
+        faces = zip(shapes[0], shapes[1])
+
+        for i, face in enumerate(faces):
+            landmarks, rect = face
+
             # draw rectangles around faces
             (x, y, w, h) = rect
             cv2.rectangle(result_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -42,9 +47,9 @@ class LandmarkDetector(object):
             # show the face numbers
             cv2.putText(result_img, "Face #{}".format(i + 1), (x - 10, y - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        
-        # Draw the landmarks on the faces as circles
-        for (x, y) in landmarks:
-            cv2.circle(result_img, (x, y), 3, (0, 0, 255), -1)
+            
+            # Draw the landmarks on the faces as circles
+            for (x, y) in landmarks:
+                cv2.circle(result_img, (x, y), 3, (0, 0, 255), -1)
 
         return result_img

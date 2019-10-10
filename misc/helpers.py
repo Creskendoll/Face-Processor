@@ -5,12 +5,20 @@ import cv2
 
 
 def normalize(features):
-    landmarks, bboxes = features
+    # landmarks, bboxes = features
+    assert len(features[0]) > 0 and len(
+        features[1]) > 0, "No faces are provided to the normalize function!"
+    
+    faces = zip(features[0], features[1])
+    norm_landmarks = []
+    for face in faces:
+        landmarks, rect = face
+        faceX, faceY, faceW, faceH = rect
+        # don't ask me how
+        norm_landmarks.append([((x - faceX) / faceW, (y - faceY) / faceH)
+                               for (x, y) in landmarks])
 
-    # don't ask me how
-    n_l = [((x - faceX) / faceW, (y - faceY) / faceH)
-           for (x, y) in landmarks for faceX, faceY, faceW, faceH in bboxes]
-    return (n_l, bboxes)
+    return (norm_landmarks, features[1])
 
 
 # Returns a collection of bounding boxes and landmarks of the faces in the image
