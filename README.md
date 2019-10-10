@@ -1,16 +1,21 @@
 # Face-Processor
-A program which analyses images, and videos in order to get information about the faces within the frames. The program utilizes Microsoft Azure cognitive services using their API. At the current version the program is built to first cut frames out of a video file and analyse those frames for faces. Processing a video feed frame for frame is costly and since the web request takes time to result it is not possible. 
+BAU capstone project for the term 2019-2020. This project aims to combine face recognition with cognitive functionality such as emotion and focus detection.    
 
-## Extracting the frames
-First you have to have a video, preferably as a .mp4. Run the ``frameExtractor.py`` script by specifying the path to the video file. An example would be:
+The program utilizes the Microsoft Azure cognitive services API. The service returns predictions for emotions and several other features. [Refer here for more info on cognitive services.](https://docs.microsoft.com/en-us/azure/cognitive-services/face/index) 
 
-- ``python frameExtractor.py ./video.mp4``
+## Project setup
+You need Python 3 and pip to setup and run the project. Linux is the recommended OS.
 
-This will save the images into the frames folder with the folder name being the video files name.
+On Ubuntu run this to install opencv:
+- `sudo apt-get install python-opencv` 
 
-## Processing the frames
-Add your Azure Cognitive Services subscription key to the ``index.py`` script and run it by specifying the folder for the frames.
+If you're using Windows you might need to install C/C++ build tools in order to build opencv. [More info can be found here.](https://docs.opencv.org/master/d5/de5/tutorial_py_setup_in_windows.html)
 
-- ``python index.py ./frames/video``
+To install the required dependencies navigate into the projects directory and run: 
+- `python -m pip install -r req.txt`
 
-This will process all the images within the given folder recursively. The resulting .csv will be saved as ``data.csv`` to the root directory.
+## Running the project
+In the current state you have to run the `main.py` file to run the project. You can do this by running this command:
+- `python main.py`
+
+This should open up a window with a video feed from your webcam and face outlines.
