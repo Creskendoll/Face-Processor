@@ -79,7 +79,15 @@ class LandmarksFace(object):
         return (self.dist(self.left_top_right, self.left_bot_right) + self.dist(self.right_top_right, self.right_bot_right)) / 2
 
     def getEyeAspectRatio(self):
-        return self.getEyeWidth() / self.getEyeHeight()
+        eye_height = self.getEyeHeight()
+        if eye_height == 0:
+            return 0
+        else:
+            return self.getEyeWidth() / self.getEyeHeight()
+
+    def getFaceImage(self, image):
+        # TODO: Return the face image within the bounding box
+        pass
 
     def __str__(self):
         results = self.get(self.funcDict.keys())

@@ -1,5 +1,5 @@
 import cv2
-from video import CaptureAsync, LandmarkDetector
+from video import CaptureAsync, LandmarkDetector, Emotion
 from models import LandmarksFace, FaceOutline
 from misc.helpers import normalize
 import numpy as np
@@ -9,14 +9,17 @@ from os.path import abspath
 
 def main():
     cam = CaptureAsync()
+    emotion = Emotion()
     cam.start()
     detector = LandmarkDetector("./models/landmarks.dat")
 
     save_file = abspath("./recording.csv")
     recorder = Recorder(save_file)
     recording = False
+    frame_index = 0
 
     while True:
+        frame_index += 1
         ret, frame = cam.read()
         frame_H, frame_W = frame.shape[0], frame.shape[1]
 
@@ -33,6 +36,11 @@ def main():
         outlined = np.empty((frame_H, frame_W, 3), np.uint8)
         outlined.fill(255)
 
+        if frame_index % 30 == 0:
+            frame_index = 0
+            # TODO: make this async
+            print(emotion.getPrediction(frame))
+            
         # If a face is detected in frame
         if len(shapes[0]) > 0 and len(shapes[1]) > 0:
             # Normalize distances
@@ -43,7 +51,7 @@ def main():
             for i, norm_face in enumerate(norm_faces):
                 # create face properties 
                 face = LandmarksFace(norm_face)
-                print("Face #{}:\n{}".format(i, face))
+                # print("Face #{}:\n{}".format(i, face))
                 if recording:
                     # recorder.captureFrame(frame);
                     recorder.captureFace(face, i)

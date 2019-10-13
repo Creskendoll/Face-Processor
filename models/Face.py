@@ -67,3 +67,6 @@ class Face(object):
 
     def getAge(self):
         return self.data[self.index_dict["age"]]
+
+    def __str__(self):
+        return self.getEmotions()
