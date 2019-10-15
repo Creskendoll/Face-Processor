@@ -86,8 +86,8 @@ class LandmarksFace(object):
             return self.getEyeWidth() / self.getEyeHeight()
 
     def getFaceImage(self, image):
-        # TODO: Return the face image within the bounding box
-        pass
+        x, y, w, h = self.bbox
+        return image[y:y+h, x:x+w]
 
     def __str__(self):
         results = self.get(self.funcDict.keys())

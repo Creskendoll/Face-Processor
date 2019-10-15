@@ -5,7 +5,8 @@ from flatten_json import flatten
 import json
 from io import BytesIO
 import sys
-from models import Face
+from models import EmotionFace
+import threading
 
 class Emotion(object):
     # https://westus.dev.cognitive.microsoft.com/docs/services/563879b61984550e40cbbe8d/operations/563879b61984550f30395236
@@ -21,26 +22,25 @@ class Emotion(object):
             'returnFaceAttributes': 'age,gender,smile,emotion'
         }
 
-    def getPrediction(self, image):
-        assert self.subscription_key != "", "ERR: subscription_key can not be empty! Check line 10 in index.py"
-        
-        encoded_frame = cv2.imencode(".jpg", image)[1]
-        encoded_frame = encoded_frame.tobytes()
-        resp = requests.post(self.emotion_recognition_url, params=self.params, headers=self.header, data=encoded_frame)
+    def postRequest(self, image, callback):
+
+        encoded_image = cv2.imencode(".jpg", image)[1]
+        encoded_image = encoded_image.tobytes()
+        resp = requests.post(self.emotion_recognition_url, params=self.params, headers=self.header, data=encoded_image)
 
         if not resp.status_code == 200:
-            print("ERR: Bad request:", resp.text)
-            return None
+            print("API Error:", resp.text)
+            callback(None)
 
         # Flatten the response 
-        # resp = (flatten(o) for o in resp.json())
-        return resp.json()
+        # The response is an array of face data
+        flat_resp = [flatten(o) for o in resp.json()]
+        # Build the response data into Face objects
+        faces = [EmotionFace(face_data) for face_data in flat_resp]
 
-        # Save face vals into csv
-        # df = None
-        # if df is None:
-        #     df = pd.DataFrame(flatObj) # , columns = ['faceId', 'faceAttributes', 'faceRectangle']
-        # else:
-        #     df = df.append(pd.DataFrame(flatObj), ignore_index=True)
+        callback(faces)
 
-        # df.to_csv('data.csv')
+    def getPredictionAsync(self, image, callback):
+        assert self.subscription_key != "", "Subscription key for the emotion API can not be empty!"
+        
+        threading.Thread(target=self.postRequest, args=(image, callback)).start()
