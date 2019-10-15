@@ -15,8 +15,8 @@ def livePlotEmotions(emotion_faces: list):
         Refer to this link for more info on live plotting: 
         https://makersportal.com/blog/2018/8/14/real-time-graphing-in-python
 
-        There should be one chart for each face and a single chart should plot all the emotions
-        Each line representing an emotion, example:
+        There should be one chart for each face and a single chart should plot all the emotions of a single face
+        Each line will represent an individual emotion, example:
         https://pydatascience.org/2017/11/24/plot-multiple-lines-in-one-chart-with-different-style-python-matplotlib/
     """
     for face in emotion_faces:
@@ -35,7 +35,10 @@ def main():
     recorder = Recorder(save_file)
     recording = False
     frame_index = 0
-    UPDATE_FREQ = 30
+    # Change this to determine how frequently the emotions will get updated
+    # The Microsoft API has a limit of how many requests can be made each minute
+    # Try increasing the value if the API returns an error
+    UPDATE_FREQ = 40
 
     while True:
         # Get key input
