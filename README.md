@@ -14,8 +14,11 @@ If you're using Windows you might need to install C/C++ build tools in order to 
 To install the required dependencies navigate into the projects directory and run: 
 - `python -m pip install -r req.txt`
 
+Install tkinter:
+- `sudo apt-get install python3-tk`
+
 ## Running the project
-In the current state you have to run the `main.py` file to run the project. You can do this by running this command:
-- `python main.py`
+In the current state you have to run the `App.py` file to run the project. You can do this by running this command:
+- `python App.py`
 
 This should open up a window with a video feed from your webcam and face outlines.

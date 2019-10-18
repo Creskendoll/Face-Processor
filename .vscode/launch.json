@@ -12,7 +12,7 @@
             "name": "Start App",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "program": "${workspaceFolder}/App.py",
             "console": "integratedTerminal"
         },
         {

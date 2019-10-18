@@ -1,4 +1,5 @@
 from math import hypot
+from cv2 import resize, INTER_AREA
 
 class LandmarksFace(object):
     def __init__(self, features):
@@ -85,9 +86,16 @@ class LandmarksFace(object):
         else:
             return self.getEyeWidth() / self.getEyeHeight()
 
-    def getFaceImage(self, image):
+    def getFaceImage(self, image, size=(128,128)):
         x, y, w, h = self.bbox
-        return image[y:y+h, x:x+w]
+        cropped = image[y:y+h, x:x+w]
+        if cropped.size > 0:
+            cropped = resize(
+                cropped, size, interpolation=INTER_AREA)
+
+            return cropped
+        else:
+            return None
 
     def __str__(self):
         results = self.get(self.funcDict.keys())

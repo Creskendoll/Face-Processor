@@ -22,21 +22,22 @@ class Emotion(object):
             'returnFaceAttributes': 'age,gender,smile,emotion'
         }
 
-    def postRequest(self, image, callback):
+    def postRequest(self, images, callback):
+        faces = []
+        for image in images:
+            encoded_image = cv2.imencode(".jpg", image)[1]
+            encoded_image = encoded_image.tobytes()
+            resp = requests.post(self.emotion_recognition_url, params=self.params, headers=self.header, data=encoded_image)
 
-        encoded_image = cv2.imencode(".jpg", image)[1]
-        encoded_image = encoded_image.tobytes()
-        resp = requests.post(self.emotion_recognition_url, params=self.params, headers=self.header, data=encoded_image)
+            if not resp.status_code == 200:
+                print("API Error:", resp.text)
+                callback(None)
 
-        if not resp.status_code == 200:
-            print("API Error:", resp.text)
-            callback(None)
-
-        # Flatten the response 
-        # The response is an array of face data
-        flat_resp = [flatten(o) for o in resp.json()]
-        # Build the response data into Face objects
-        faces = [EmotionFace(face_data) for face_data in flat_resp]
+            # Flatten the response 
+            # The response is an array of face data
+            flat_resp = [flatten(o) for o in resp.json()]
+            # Build the response data into Face objects
+            faces += [EmotionFace(face_data) for face_data in flat_resp]
 
         callback(faces)
 

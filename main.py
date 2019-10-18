@@ -5,6 +5,7 @@ from misc.helpers import normalize
 import numpy as np
 from misc import Recorder, Reader, Plotter
 from os.path import abspath
+from gui.UI import UI
 
 p = Plotter()
 def livePlotEmotions(emotion_faces: list):
