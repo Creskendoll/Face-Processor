@@ -30,10 +30,10 @@ class ImageBuilder(object):
             return None
 
     def getFaceImages(self, frame, data=None, size=(128,128)):
-        if not data:
+        if data is None:
             data = self.getFrameData(frame)
 
-        if data:
+        if data is not None:
             faces, _ = data
             face_imgs = [LandmarksFace(face).getFaceImage(frame, size) for face in faces]
 

@@ -6,6 +6,7 @@ import numpy as np
 from misc import Recorder, Reader, Plotter
 from os.path import abspath
 from gui.UI import UI
+from gui.ImageBuilder import ImageBuilder
 
 p = Plotter()
 def livePlotEmotions(emotion_faces: list):
@@ -36,6 +37,7 @@ def main():
     recorder = Recorder(save_file)
     recording = False
     frame_index = 0
+    img_builder = ImageBuilder(model_file, save_file)
     # Change this to determine how frequently the emotions will get updated
     # The Microsoft API has a limit of how many requests can be made each minute
     # Try increasing the value if the API returns an error
@@ -73,7 +75,15 @@ def main():
             normalized_shapes = normalize(shapes)
             # Values must be zipped together because of a stupid design mistake
             # Too lazy to go back and fix it
-            faces, norm_faces = zip(shapes[0], shapes[1]), zip(normalized_shapes[0], normalized_shapes[1])
+            data = zip(shapes[0], shapes[1]), zip(normalized_shapes[0], normalized_shapes[1])
+            faces, norm_faces = data
+
+            # Just the face image
+            face_imgs = img_builder.getFaceImages(frame, data=data, size=(256,256))
+            # cropped_img = LandmarksFace(face).getFaceImage(frame)
+            for face_index, face_img in enumerate(face_imgs):
+                cv2.imshow('Face:{}'.format(face_index+1), face_img)
+
             # faces and norm_faces contain the bounding boxes and landmarks required to construct Face objects
             # i represents the face index since there can be multiple faces in the frame
             for i, (face, norm_face) in enumerate(zip(faces, norm_faces)):
@@ -85,18 +95,12 @@ def main():
                     # recorder.captureFrame(frame);
                     recorder.captureFace(landmarks_face, i)
 
-                # Just the face image
-                cropped_img = LandmarksFace(face).getFaceImage(frame)
-                if cropped_img.size > 0:
-                    cropped_img = cv2.resize(cropped_img, (256, 256), interpolation = cv2.INTER_AREA)
-                    
-                    # Get emotions from Microsoft API when 'e' is pressed
-                    if key == ord("e"):
-                        # TODO-Kaan: Get the predictions from the face image and send EmotionFace list to the callback
-                        # You might wanna add the face index to the callback parameters idk.
-                        emotion.getPredictionAsync(cropped_img, livePlotEmotions)
-                    
-                    cv2.imshow('Face', cropped_img)
+                # Get emotions from Microsoft API when 'e' is pressed
+                # if key == ord("e"):
+                #     # TODO-Kaan: Get the predictions from the face image and send EmotionFace list to the callback
+                #     # You might wanna add the face index to the callback parameters idk.
+                #     emotion.getPredictionAsync(face_imgs, livePlotEmotions)
+                        
                
                 # Outline drawer
                 face_outline = FaceOutline(face)
