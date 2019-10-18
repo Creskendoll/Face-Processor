@@ -27,6 +27,9 @@ class App(UIOptions):
         self.delay = 10
         self.update()
 
+        # To keep track of how many images are being sent to the emotion API
+        self.sending = 0
+
         self.window.mainloop()
 
     def livePlotEmotions(self, emotion_faces: list):
@@ -41,6 +44,8 @@ class App(UIOptions):
             Each line will represent an individual emotion, example:
             https://pydatascience.org/2017/11/24/plot-multiple-lines-in-one-chart-with-different-style-python-matplotlib/
         """
+        # Substract when response is received
+        self.sending -= len(emotion_faces)
         for face in emotion_faces:
             # TODO-Kaan: Update a plt with emotion values
             self.p.updatePlot(face)
@@ -70,10 +75,18 @@ class App(UIOptions):
             if self.get_emotions.get():
                 self.frame_index += 1
                 if self.frame_index % self.emotion_update_freq.get() == 0:
+                    # Reset counter
                     self.frame_index = 0
                     face_images = self.img_builder.getFaceImages(frame, size=(128,128))
+                    # Get emotions
                     self.emotion.getPredictionAsync(face_images, self.livePlotEmotions)
+                    # Increment sending counter
+                    self.sending += len(face_images)
 
+                cv2.putText(processed_img, "Sending: {}".format(self.sending), (int(self.vid.width)-150, int(self.vid.height)-10),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+            # Convert from cv2 image to PIL IMAGE
             rgb_image = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGBA)
             self.photo = PIL.ImageTk.PhotoImage(
                 image=PIL.Image.fromarray(rgb_image))

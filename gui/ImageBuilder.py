@@ -1,6 +1,6 @@
 from video import CaptureAsync, LandmarkDetector, Emotion
 from models import LandmarksFace, FaceOutline
-from misc.helpers import normalize
+from misc.helpers import normalize, shapeToData
 import numpy as np
 from misc import Recorder, Reader, Plotter
 import cv2
@@ -14,7 +14,7 @@ class ImageBuilder(object):
         self.recorder = Recorder(save_file)
         self.recording = False
 
-    def getFrameData(self, frame):
+    def getFrameData(self, frame, shapes=None):
         # Extract the bounding boxes and landmarks from the image
         shapes = self.detector.getShapes(frame)
         if len(shapes[0]) > 0 and len(shapes[1]) > 0:
@@ -41,19 +41,19 @@ class ImageBuilder(object):
         else:
             return []
 
-    def build(self, frame, draw_landmarks=True, draw_outline=True):
+    def build(self, frame, draw_landmarks=True, draw_outline=True, shapes=None):
         frame_H, frame_W = frame.shape[0], frame.shape[1]
 
-        # Extract the bounding boxes and landmarks from the image
-        shapes = self.detector.getShapes(frame)
+        if shapes is None:
+            # Extract the bounding boxes and landmarks from the image
+            shapes = self.detector.getShapes(frame)
 
+        data = shapeToData(shapes)
         # Black background
         blank_image = np.zeros((frame_H, frame_W, 3), np.uint8)
         if draw_landmarks:
             # Draw the bounding box and landmarks on the frame
             frame = self.detector.drawOverlay(frame, shapes=shapes)
-
-        data = self.getFrameData(frame)
 
         if data:
             faces, norm_faces = data

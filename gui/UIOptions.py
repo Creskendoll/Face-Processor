@@ -27,7 +27,7 @@ class UIOptions(object):
         # Slider
         Checkbutton(self.window, text="Emotions", variable=self.get_emotions).pack(
             anchor=CENTER, expand=True)
-        Scale(self.window, variable=self.emotion_update_freq, orient=HORIZONTAL).pack(anchor=CENTER)
+        Scale(self.window, variable=self.emotion_update_freq, orient=HORIZONTAL, from_=5, to=100).pack(anchor=CENTER)
 
         # Options
         Checkbutton(self.window, text="Landmarks", variable=self.draw_landmarks).pack(

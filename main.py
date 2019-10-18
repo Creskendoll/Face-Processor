@@ -7,6 +7,7 @@ from misc import Recorder, Reader, Plotter
 from os.path import abspath
 from gui.UI import UI
 from gui.ImageBuilder import ImageBuilder
+from misc.helpers import normalize, shapeToData
 
 p = Plotter()
 def livePlotEmotions(emotion_faces: list):
@@ -53,15 +54,10 @@ def main():
 
         # Extract the bounding boxes and landmarks from the image
         shapes = detector.getShapes(frame)
-
-        # Black background
-        blank_image = np.zeros((frame_H,frame_W, 3), np.uint8)
-        # Draw the bounding box and landmarks on the frame
-        detected = detector.drawOverlay(frame, shapes=shapes)
        
         # White background
-        outlined = np.empty((frame_H, frame_W, 3), np.uint8)
-        outlined.fill(255)
+        # outlined = np.empty((frame_H, frame_W, 3), np.uint8)
+        # outlined.fill(255)
 
         # Frequently get predictions
         # frame_index += 1
@@ -69,47 +65,20 @@ def main():
         #     frame_index = 0
         #     emotion.getPredictionAsync(frame, lambda res: print(res))
 
-        # If a face is detected
-        if len(shapes[0]) > 0 and len(shapes[1]) > 0:
-            # Normalize the values
-            normalized_shapes = normalize(shapes)
-            # Values must be zipped together because of a stupid design mistake
-            # Too lazy to go back and fix it
-            data = zip(shapes[0], shapes[1]), zip(normalized_shapes[0], normalized_shapes[1])
-            faces, norm_faces = data
-
-            # Just the face image
-            face_imgs = img_builder.getFaceImages(frame, data=data, size=(256,256))
-            # cropped_img = LandmarksFace(face).getFaceImage(frame)
-            for face_index, face_img in enumerate(face_imgs):
-                cv2.imshow('Face:{}'.format(face_index+1), face_img)
-
-            # faces and norm_faces contain the bounding boxes and landmarks required to construct Face objects
-            # i represents the face index since there can be multiple faces in the frame
-            for i, (face, norm_face) in enumerate(zip(faces, norm_faces)):
-                # create face properties
-                landmarks_face = LandmarksFace(norm_face)
-                # print("Face #{}:\n{}".format(i, face))
-                # Record landmarks
-                if recording:
-                    # recorder.captureFrame(frame);
-                    recorder.captureFace(landmarks_face, i)
-
-                # Get emotions from Microsoft API when 'e' is pressed
-                # if key == ord("e"):
-                #     # TODO-Kaan: Get the predictions from the face image and send EmotionFace list to the callback
-                #     # You might wanna add the face index to the callback parameters idk.
-                #     emotion.getPredictionAsync(face_imgs, livePlotEmotions)
-                        
-               
-                # Outline drawer
-                face_outline = FaceOutline(face)
-                outlined = face_outline.drawOutline(outlined)
+        processed_img = img_builder.build(frame, shapes=shapes)
+        face_imgs = img_builder.getFaceImages(frame, data=shapeToData(shapes), size=(256,256))
+        if len(face_imgs) > 0:
+            cv2.imshow('Face', face_imgs[0])
+        
+        # Get emotions from Microsoft API when 'e' is pressed
+        if key == ord("e"):
+            # TODO-Kaan: Get the predictions from the face image and send EmotionFace list to the callback
+            # You might wanna add the face index to the callback parameters idk.
+            emotion.getPredictionAsync(face_imgs, livePlotEmotions)
         
         # Vertically stack the images
-        frame_with_outline = np.vstack((detected, outlined))
-
-        cv2.imshow('App', frame_with_outline)
+        # frame_with_outline = np.vstack((detected, outlined))
+        cv2.imshow('App', processed_img)
 
         # show the output image with the face detections + facial landmarks
         if key == ord('q'):
