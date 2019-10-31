@@ -94,6 +94,7 @@ class App(UIOptions):
 
         self.window.after(self.delay, self.update)
 
-# Create a window and pass it to the Application 5
-root = Tk()
-App(root, "App")
+if __name__ == "__main__":
+    # Create a window and pass it to the Application
+    root = Tk()
+    App(root, "App")

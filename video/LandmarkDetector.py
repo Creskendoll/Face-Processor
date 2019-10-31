@@ -8,6 +8,8 @@ class LandmarkDetector(object):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(model_file)
 
+    # Returns a collection of bounding boxes and landmarks of the faces in the image
+    # [([(x,y), ...], bounding_box)]
     def getShapes(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # detect faces in the grayscale image
