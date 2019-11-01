@@ -1,6 +1,7 @@
 import cv2
 import csv
 from itertools import chain
+from misc.helpers import normalizeBBox
 
 class Recorder(object):
     def __init__(self, file_path):
@@ -13,7 +14,9 @@ class Recorder(object):
         self.out.write(frame)
 
     def captureFace(self, face, face_index):
-        self.data.append(face.landmarks + [face_index])
+        l, b = face.landmarks, face.bbox
+        n_b = normalizeBBox(b, (640, 480))
+        self.data.append(l + [n_b, face_index])
 
     def save_csv(self):
         assert ".csv" in self.file_path, "File type must be of type CSV"

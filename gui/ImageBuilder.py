@@ -5,7 +5,6 @@ import numpy as np
 from misc import Recorder, Reader, Plotter
 import cv2
 
-
 class ImageBuilder(object):
     def __init__(self, model_file, save_file):
         self.emotion = Emotion()
@@ -50,7 +49,7 @@ class ImageBuilder(object):
 
         data = shapeToData(shapes)
         # Black background
-        blank_image = np.zeros((frame_H, frame_W, 3), np.uint8)
+        # blank_image = np.zeros((frame_H, frame_W, 3), np.uint8)
         if draw_landmarks:
             # Draw the bounding box and landmarks on the frame
             frame = self.detector.drawOverlay(frame, shapes=shapes)
@@ -66,7 +65,7 @@ class ImageBuilder(object):
                 # Record landmarks
                 if self.recording:
                     # recorder.captureFrame(frame);
-                    recorder.captureFace(landmarks_face, i)
+                    self.recorder.captureFace(landmarks_face, i)
 
                 # Outline drawer
                 face_outline = FaceOutline(face)
@@ -74,3 +73,9 @@ class ImageBuilder(object):
                     frame = face_outline.drawOutline(frame)
 
         return frame
+
+    def toggleRecording(self):
+        if self.recording:
+            self.recorder.end()
+        self.recording = not self.recording
+        print(self.recording)

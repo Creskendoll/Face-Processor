@@ -7,7 +7,7 @@ from video import Emotion
 from gui.ImageBuilder import ImageBuilder
 from os.path import abspath
 from gui.UIOptions import UIOptions
-from misc import Plotter
+from misc import Plotter, Recorder
 
 class App(UIOptions):
     def __init__(self, window, window_title):
@@ -15,13 +15,18 @@ class App(UIOptions):
         self.p = Plotter()
         self.emotion = Emotion()
 
+        recording_file = abspath("./recording.csv")
         self.img_builder = ImageBuilder(
-            abspath("./models/landmarks.dat"), abspath("./recording.csv"))
+            abspath("./models/landmarks.dat"), recording_file)
+
+        self.recorder = Recorder(recording_file)
 
         # Button that lets the user take a snapshot
         self.btn_snapshot = Button(
             self.window, text="Snapshot", width=50, command=self.snapshot)
         self.btn_snapshot.pack(anchor=CENTER, expand=True)
+
+        self.window.bind('s', lambda e: self.img_builder.toggleRecording())
 
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 10

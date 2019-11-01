@@ -103,3 +103,7 @@ class LandmarksFace(object):
         for res, key in zip(results, self.funcDict.keys()):
             s += "{}: {}\n".format(key, res)
         return s
+
+    def getNormalizedFeatures(self):
+        # self.bbox 
+        return {}
