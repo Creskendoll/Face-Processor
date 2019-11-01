@@ -2,6 +2,7 @@ import dlib
 import cv2
 from imutils import face_utils
 from itertools import chain
+from random import randint
 
 class LandmarkDetector(object):
     def __init__(self, model_file):
@@ -44,14 +45,17 @@ class LandmarkDetector(object):
 
             # draw rectangles around faces
             (x, y, w, h) = rect
-            cv2.rectangle(result_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            # cv2.rectangle(result_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-            # show the face numbers
-            cv2.putText(result_img, "Face #{}".format(i + 1), (x - 10, y - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # # show the face numbers
+            # cv2.putText(result_img, "Face #{}".format(i + 1), (x - 10, y - 10),
+            #     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             
             # Draw the landmarks on the faces as circles
+            # rand_color = (randint(0,255),randint(0,255),randint(0,255))
+            rand_color = (255,255,255)
             for (x, y) in landmarks:
-                cv2.circle(result_img, (x, y), 3, (0, 0, 255), -1)
+                # cv2.circle(result_img, (x, y), 3, (0, 0, 255), -1)
+                cv2.circle(result_img, (x, y), 3, rand_color, -1)
 
         return result_img

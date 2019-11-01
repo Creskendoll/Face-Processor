@@ -18,11 +18,11 @@ def normalize(features):
 
     return (norm_landmarks, features[1])
 
-def normalizeBBox(bbox: [], dimensions: (int, int)):
-    w, h = dimensions
+def normalizeBBox(bbox: [], frame_dimensions: (int, int)):
+    w, h = frame_dimensions
     x1, y1 = bbox[0], bbox[1] 
-    x2, y2 = bbox[2], bbox[3] 
-    return [x1/w, y1/h, x2/w, y2/h]
+    bb_w, bb_h = bbox[2], bbox[3]
+    return [x1/w, y1/h, bb_w/w, bb_h/h]
 
 def shapeToData(shapes):
     if len(shapes[0]) > 0 and len(shapes[1]) > 0:

@@ -41,8 +41,11 @@ class ImageBuilder(object):
             return []
 
     def build(self, frame, draw_landmarks=True, draw_outline=True, shapes=None):
-        frame_H, frame_W = frame.shape[0], frame.shape[1]
+        if not draw_landmarks and not draw_outline:
+            return frame
 
+        frame_H, frame_W = frame.shape[0], frame.shape[1]
+        
         if shapes is None:
             # Extract the bounding boxes and landmarks from the image
             shapes = self.detector.getShapes(frame)
@@ -54,7 +57,7 @@ class ImageBuilder(object):
             # Draw the bounding box and landmarks on the frame
             frame = self.detector.drawOverlay(frame, shapes=shapes)
 
-        if data:
+        if data is not None:
             faces, norm_faces = data
             # faces and norm_faces contain the bounding boxes and landmarks required to construct Face objects
             # i represents the face index since there can be multiple faces in the frame
@@ -76,6 +79,8 @@ class ImageBuilder(object):
 
     def toggleRecording(self):
         if self.recording:
+            print("Saving to:", self.recorder.file_path)
             self.recorder.end()
+        else:
+            print("Started recording.")
         self.recording = not self.recording
-        print(self.recording)

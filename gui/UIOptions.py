@@ -15,7 +15,7 @@ class UIOptions(object):
         # State variables
         self.draw_landmarks = IntVar(value=1)
         self.get_emotions = IntVar(value=0)
-        self.draw_outline = IntVar(value=1)
+        self.draw_outline = IntVar(value=0)
         self.emotion_update_freq = IntVar(value=30)
         self.frame_index = 0
 

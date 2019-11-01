@@ -30,5 +30,6 @@ class Recorder(object):
 
     def end(self):
         self.save_csv()
+        self.data = []
         # self.video_out.release()
     

@@ -56,8 +56,8 @@ def main():
         shapes = detector.getShapes(frame)
        
         # White background
-        # outlined = np.empty((frame_H, frame_W, 3), np.uint8)
-        # outlined.fill(255)
+        outlined = np.empty((frame_H, frame_W, 3), np.uint8)
+        outlined.fill(255)
 
         # Frequently get predictions
         # frame_index += 1
