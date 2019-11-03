@@ -8,6 +8,7 @@ class LandmarkDetector(object):
     def __init__(self, model_file):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(model_file)
+        self.landmarks_color = 0x000000
 
     # Returns a collection of bounding boxes and landmarks of the faces in the image
     # [([(x,y), ...], bounding_box)]
@@ -52,10 +53,14 @@ class LandmarkDetector(object):
             #     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             
             # Draw the landmarks on the faces as circles
-            # rand_color = (randint(0,255),randint(0,255),randint(0,255))
-            rand_color = (255,255,255)
+            self.landmarks_color += 0x32
+            c = int(self.landmarks_color)
+            rgb_color = (c & 255, (c >> 8) & 255, (c >> 16) & 255)
             for (x, y) in landmarks:
                 # cv2.circle(result_img, (x, y), 3, (0, 0, 255), -1)
-                cv2.circle(result_img, (x, y), 3, rand_color, -1)
+                cv2.circle(result_img, (x, y), 5, rgb_color, -1)
+            
+            if self.landmarks_color >= 0xFFFFFF:
+                self.landmarks_color = 0x0
 
         return result_img

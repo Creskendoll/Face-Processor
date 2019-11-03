@@ -70,9 +70,12 @@ for row in reader.read_csv():
     face = LandmarksFace(features)
     data.append(face)
 
-FPS = 120
+FPS = 200
 FRAME_HEIGHT, FRAME_WIDTH = 960, 1280
-TRAIL = 2
+TRAIL = 6
+TRAIL_MARGIN = 3
+
+frame_index = 0
 
 shapes_buffer = []
 more_data = createSubsamples(data, 15)
@@ -89,23 +92,25 @@ for frame_info in more_data:
 
     drawn_img = img_builder.build(
         bg, draw_landmarks=True, draw_outline=False, shapes=shapes)
-    shapes_buffer.append(shapes)
+
+    if frame_index % TRAIL_MARGIN == 0:
+        frame_index = 0
+        shapes_buffer.append(shapes)
 
     prev_face = None
     for past_shape in shapes_buffer:
         drawn_img = img_builder.build(
             drawn_img, draw_landmarks=True, draw_outline=False, shapes=past_shape)
 
-        if prev_face is not None:
-            prev_landmarks = prev_face[0][0]
-            current_landmarks = past_shape[0][0]
-            # for point_prev, point_current in zip(prev_landmarks, current_landmarks):
-            #   x1, y1 = point_prev
-            #   x2, y2 = point_current
-            #   rand_color = (randint(0,255),randint(0,255),randint(0,255))
-            #   cv2.line(drawn_img, (x1,y1), (x2,y2), rand_color, thickness=2)
-
-        prev_face = past_shape
+        # if prev_face is not None:
+        #     prev_landmarks = prev_face[0][0]
+        #     current_landmarks = past_shape[0][0]
+        #     for point_prev, point_current in zip(prev_landmarks, current_landmarks):
+        #       x1, y1 = point_prev
+        #       x2, y2 = point_current
+        #       rand_color = (randint(0,255),randint(0,255),randint(0,255))
+        #       cv2.line(drawn_img, (x1,y1), (x2,y2), rand_color, thickness=2)
+        # prev_face = past_shape
 
     cv2.imshow('Playback', drawn_img)
     # video_writer.write(drawn_img)
@@ -115,6 +120,8 @@ for frame_info in more_data:
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
+
+    frame_index += 1
     sleep(1.0/FPS)
 
 video_writer.release()
