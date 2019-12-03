@@ -9,6 +9,7 @@ from os.path import abspath
 from gui.UIOptions import UIOptions
 from misc import Plotter, Recorder
 
+
 class App(UIOptions):
     def __init__(self, window, window_title):
         super().__init__(window, window_title)
@@ -17,16 +18,18 @@ class App(UIOptions):
 
         recording_file = abspath("./recording.csv")
         self.img_builder = ImageBuilder(
-            abspath("./models/landmarks.dat"), recording_file)
+            abspath("./models/landmarks.dat"), recording_file
+        )
 
         self.recorder = Recorder(recording_file)
 
         # Button that lets the user take a snapshot
         self.btn_snapshot = Button(
-            self.window, text="Snapshot", width=50, command=self.snapshot)
+            self.window, text="Snapshot", width=50, command=self.snapshot
+        )
         self.btn_snapshot.pack(anchor=CENTER, expand=True)
 
-        self.window.bind('s', lambda e: self.img_builder.toggleRecording())
+        self.window.bind("s", lambda e: self.img_builder.toggleRecording())
 
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 10
@@ -67,37 +70,52 @@ class App(UIOptions):
         if ret:
             processed_img = self.img_builder.build(frame)
             cv2.imwrite(
-                "frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg", processed_img)
+                "frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg", processed_img
+            )
 
     def update(self):
         # Get a frame from the video source
         ret, frame = self.vid.read()
 
         if ret:
+            # Draw an overlay depending on the options
             processed_img = self.img_builder.build(
-                frame, draw_landmarks=self.draw_landmarks.get(), draw_outline=self.draw_outline.get())
+                frame,
+                draw_landmarks=self.draw_landmarks.get(),
+                draw_outline=self.draw_outline.get(),
+            )
 
+            # If get emotions is checked
             if self.get_emotions.get():
                 self.frame_index += 1
+                # Get emotion predictions every Nth frame
                 if self.frame_index % self.emotion_update_freq.get() == 0:
                     # Reset counter
                     self.frame_index = 0
-                    face_images = self.img_builder.getFaceImages(frame, size=(128,128))
-                    # Get emotions
+                    face_images = self.img_builder.getFaceImages(frame, size=(128, 128))
+                    # Get emotions and pass it to the provided callback
                     self.emotion.getPredictionAsync(face_images, self.livePlotEmotions)
                     # Increment sending counter
                     self.sending += len(face_images)
 
-                cv2.putText(processed_img, "Sending: {}".format(self.sending), (int(self.vid.width)-150, int(self.vid.height)-10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                # Print progress
+                cv2.putText(
+                    processed_img,
+                    "Sending: {}".format(self.sending),
+                    (int(self.vid.width) - 150, int(self.vid.height) - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (255, 255, 255),
+                    2,
+                )
 
             # Convert from cv2 image to PIL IMAGE
             rgb_image = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGBA)
-            self.photo = PIL.ImageTk.PhotoImage(
-                image=PIL.Image.fromarray(rgb_image))
+            self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(rgb_image))
             self.canvas.create_image(0, 0, image=self.photo, anchor=NW)
 
         self.window.after(self.delay, self.update)
+
 
 if __name__ == "__main__":
     # Create a window and pass it to the Application

@@ -10,6 +10,8 @@ from gui.ImageBuilder import ImageBuilder
 from misc.helpers import normalize, shapeToData
 
 p = Plotter()
+
+
 def livePlotEmotions(emotion_faces: list):
     """
         `emotion_faces` is a list of EmotionFace objects.
@@ -26,6 +28,7 @@ def livePlotEmotions(emotion_faces: list):
         # TODO-Kaan: Update a plt with emotion values
         p.updatePlot(face)
         print(face)
+
 
 def main():
     cam = CaptureAsync()
@@ -46,7 +49,7 @@ def main():
 
     while True:
         # Get key input
-        key = cv2.waitKey(1) & 0xFF 
+        key = cv2.waitKey(1) & 0xFF
 
         # Read camera
         ret, frame = cam.read()
@@ -54,7 +57,7 @@ def main():
 
         # Extract the bounding boxes and landmarks from the image
         shapes = detector.getShapes(frame)
-       
+
         # White background
         outlined = np.empty((frame_H, frame_W, 3), np.uint8)
         outlined.fill(255)
@@ -66,29 +69,32 @@ def main():
         #     emotion.getPredictionAsync(frame, lambda res: print(res))
 
         processed_img = img_builder.build(frame, shapes=shapes)
-        face_imgs = img_builder.getFaceImages(frame, data=shapeToData(shapes), size=(256,256))
+        face_imgs = img_builder.getFaceImages(
+            frame, data=shapeToData(shapes), size=(256, 256)
+        )
         if len(face_imgs) > 0:
-            cv2.imshow('Face', face_imgs[0])
-        
+            cv2.imshow("Face", face_imgs[0])
+
         # Get emotions from Microsoft API when 'e' is pressed
         if key == ord("e"):
             # TODO-Kaan: Get the predictions from the face image and send EmotionFace list to the callback
             # You might wanna add the face index to the callback parameters idk.
             emotion.getPredictionAsync(face_imgs, livePlotEmotions)
-        
+
         # Vertically stack the images
         # frame_with_outline = np.vstack((detected, outlined))
-        cv2.imshow('App', processed_img)
+        cv2.imshow("App", processed_img)
 
         # show the output image with the face detections + facial landmarks
-        if key == ord('q'):
+        if key == ord("q"):
             cam.stop()
             cv2.destroyAllWindows()
             break
-        elif key == ord('s'):
+        elif key == ord("s"):
             if recording:
                 recorder.end()
             recording = not recording
+
 
 if __name__ == "__main__":
     main()

@@ -5,6 +5,7 @@ import numpy as np
 from misc import Recorder, Reader, Plotter
 import cv2
 
+
 class ImageBuilder(object):
     def __init__(self, model_file, save_file):
         self.emotion = Emotion()
@@ -22,19 +23,24 @@ class ImageBuilder(object):
             # Values must be zipped together because of a stupid design mistake
             # Too lazy to go back and fix it
             # faces, norm_faces
-            return zip(shapes[0], shapes[1]), zip(normalized_shapes[0], normalized_shapes[1])
+            return (
+                zip(shapes[0], shapes[1]),
+                zip(normalized_shapes[0], normalized_shapes[1]),
+            )
             # faces and norm_faces contain the bounding boxes and landmarks required to construct Face objects
             # i represents the face index since there can be multiple faces in the frame
         else:
             return None
 
-    def getFaceImages(self, frame, data=None, size=(128,128)):
+    def getFaceImages(self, frame, data=None, size=(128, 128)):
         if data is None:
             data = self.getFrameData(frame)
 
         if data is not None:
             faces, _ = data
-            face_imgs = [LandmarksFace(face).getFaceImage(frame, size) for face in faces]
+            face_imgs = [
+                LandmarksFace(face).getFaceImage(frame, size) for face in faces
+            ]
 
             return [f for f in face_imgs if f is not None]
         else:
@@ -45,7 +51,7 @@ class ImageBuilder(object):
             return frame
 
         frame_H, frame_W = frame.shape[0], frame.shape[1]
-        
+
         if shapes is None:
             # Extract the bounding boxes and landmarks from the image
             shapes = self.detector.getShapes(frame)
@@ -79,7 +85,6 @@ class ImageBuilder(object):
 
     def toggleRecording(self):
         if self.recording:
-            print("Saving to:", self.recorder.file_path)
             self.recorder.end()
         else:
             print("Started recording.")

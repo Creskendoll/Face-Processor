@@ -3,6 +3,7 @@ import csv
 from itertools import chain
 from misc.helpers import normalizeBBox
 
+
 class Recorder(object):
     def __init__(self, file_path):
         self.file_path = file_path
@@ -20,9 +21,10 @@ class Recorder(object):
 
     def save_csv(self):
         assert ".csv" in self.file_path, "File type must be of type CSV"
-        with open(self.file_path, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',',
-                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        with open(self.file_path, "w", newline="") as csvfile:
+            writer = csv.writer(
+                csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
+            )
 
             # data = list(chain.from_iterable(self.data))
             for row in self.data:
@@ -30,6 +32,7 @@ class Recorder(object):
 
     def end(self):
         self.save_csv()
+        print("Saved to:", self.file_path)
         self.data = []
         # self.video_out.release()
-    
+
